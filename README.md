@@ -12,8 +12,9 @@ Limitations
 -----------
 
 - by default, stats are tagged with instance_name but not instance_id
-- 
-
+- metrics are created on the fly as custom metrics
+- customary to also check `process.env.GOOGLE_APPLICATIONS_CREDENTIALS` for the
+  google monitoring service account credentials
 
 Api
 ---
@@ -38,6 +39,17 @@ Each upload the the complete POST request object that will be serialized and sen
 Options can be omitted, or be an object with the instance_name to identify samples,
 or the object returned from `getPlatformDetails()` that includes information used to
 tie a metric to the AWS or GCE instance that it was collected on.
+
+The response will be an array of Google Stackdriver POST bodies in the form
+
+    { timeSeries: [
+      metric: { ... },
+      resource: { ... },
+      points: [
+        { interval: { },
+          value: { doubleValue: 1234.5 } }
+      ]
+    ] }
 
 ### uploadCustomMetricsToGoogleStackdriver( creds, uploadBodies, callback )
 
