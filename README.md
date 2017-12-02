@@ -1,5 +1,8 @@
 google-custom-metrics
 =====================
+[![Build Status](https://api.travis-ci.org/andrasq/node-google-custom-metrics.svg?branch=master)](https://travis-ci.org/andrasq/node-google-custom-metrics?branch=master)
+[![Coverage Status](https://codecov.io/github/andrasq/node-google-custom-metrics/coverage.svg?branch=master)](https://codecov.io/github/andrasq/node-google-custom-metrics?branch=master)
+
 
 Upload legacy Stackdriver custom metrics to Google Stackdriver.
 
@@ -12,7 +15,7 @@ The code is designed to be easy to drop into any existing code: given `body`, a 
 stackdriver custom metrics upload object, and `creds`, the GCP service account
 credentials object, upload the custom metrics to Google Stackdriver with:
 
-    gm = require('google-custom-metrics');
+    var gm = require('google-custom-metrics');
 
     var body = getLegacyStackdriverUploadObject();
     var creds = getGoogleServiceAccountCredentialsObject();
@@ -22,41 +25,6 @@ credentials object, upload the custom metrics to Google Stackdriver with:
     gm.uploadCustomMetricsToGoogleStackdriver(creds, batches, function(err, replies) {
         // replies is an array
     })
-    
-
-Example:
-
-    gm = require('google-custom-metrics');
-
-    // we start with the legacy stackdriver upload object { timestamp, proto_version, data: [] }
-    // where data: { name, value, collected_at, intstance }
-    var legacyUpload = getLegacyStackdriverUploadObject();
-
-    // need the google metrics service account credentials
-    var credsFileName = "google metrics service account credentials file.json";
-    var creds = JSON.parse(fs.readFileSync(credsFileName));
-
-    // associate the metric with this host
-    // (if this step is omitted, stats will be tagged with the instance_name
-    // read from the legacyUpload object data)
-    var platformDetails = googleMetrics.getPlatformDetails(creds);
-
-    // convert the upload object to an array of google stackdriver uploads
-    var gmBatches = gm.convertStackdriverUploadToGoogleStackdriver(
-        platformDetails, legacyupload
-    );
-
-    // upload the metrics, and log failures
-    gm.uploadCustomMetricsToGoogleStackdriver(creds, gmBatches, function(err, replies) {
-        if (err) {
-            console.log("custom metrics upload error:", err);
-        }
-        else for (var i=0; i<replies.length; i++) {
-            if (replies[i].statusCode >= 400) {
-                console.log("custom metrics batch failed:", replies[i].body.error.message);
-            }
-        }
-    });
 
 
 Limitations
