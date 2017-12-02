@@ -120,3 +120,9 @@ Change Log
 ----------
 
 - 0.9.0 - initial published version
+
+
+Todo
+----
+
+- make tests pass with node-v0.10
