@@ -8,6 +8,8 @@ var http = require('http');
 var os = require('os');
 var child_process = require('child_process');
 
+if (typeof setImmediate === 'undefined') var setImmediate = process.nextTick;
+
 
 // test key generated with ssh-keygen
 var somePrivateKey = [
@@ -43,7 +45,7 @@ var somePrivateKey = [
 
 module.exports = {
     'package': {
-        'should export expected functions': function(t) {
+        'should export api functions': function(t) {
             t.equal(typeof gm.convertStackdriverUploadToGoogleStackdriver, 'function');
             t.equal(typeof gm.uploadCustomMetricsToGoogleStackdriver, 'function');
             t.equal(typeof gm.getPlatformDetails, 'function');
@@ -446,7 +448,9 @@ module.exports = {
                     t.stubOnce(gm, 'httpRequest', function(uri, body, cb) { return cb(null, {}, new Buffer('{"a":1')) });
                     gm.getGoogleAccessToken(this.mockCreds, 'someScopeUrl', 777, function(err, token) {
                         t.ok(err);
-                        t.contains(err.message, 'JSON input');
+                        t.ok(err instanceof SyntaxError);
+                        t.contains(err.message, 'json error: ');
+                        t.contains(err.message, 'Unexpected end of');
                         t.done();
                     })
                 },

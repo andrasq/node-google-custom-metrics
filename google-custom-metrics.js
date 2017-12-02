@@ -43,9 +43,8 @@ module.exports = googleMetrics = {
     savedPlatformDetails: null,
 };
 
+if (typeof setImmediate === 'undefined') var setImmediate = process.nextTick;
 
-var GOOGLE_STACKDRIVER_SCOPE = "https://www.googleapis.com/auth/monitoring";
-var GOOGLE_STACKDRIVER_SERVICE = "https://monitoring.googleapis.com";
 
 /*
  * convert a legacy stackdriver upload to an array of google stackdriver uploads
@@ -362,7 +361,7 @@ function httpRequest( uri, body, callback ) {
 
 function tryJsonDecode( string ) {
     try { return JSON.parse(string) }
-    catch (e) { e.jsonInput = string; return e }
+    catch (e) { e.jsonInput = string; e.message = 'json error: ' + e.message; return e }
 }
 
 /*

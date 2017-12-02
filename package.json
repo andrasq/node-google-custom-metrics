@@ -6,6 +6,9 @@
   "repository": "https://github.com/andrasq/node-google-custom-metrics/#readme",
   "keywords": [ "gcp", "stackdriver", "metrics", "custom metrics", "stats", "monitoring" ],
 
+  "engines": {
+    "node": ">= 0.10"
+  },
   "devDependencies": {
     "qnit": "0.18.3"
   },
