@@ -7,7 +7,6 @@ var https = require('https');
 var http = require('http');
 var os = require('os');
 var child_process = require('child_process');
-var jwts = require('jwt-simple');
 
 
 // test key generated with ssh-keygen
