@@ -27,13 +27,15 @@ credentials object, upload the custom metrics to Google Stackdriver with:
     })
 
 
-Limitations
------------
+Specifics
+---------
 
-- by default, stats are tagged with instance_name but not instance_id
-- metrics are created on the fly as custom metrics
-- customary to also check `process.env.GOOGLE_APPLICATIONS_CREDENTIALS` for the
-  google monitoring service account credentials
+- without platform details, stats are tagged with just `instance_name` and
+  the resource labels will be empty
+- metrics can be created on the fly as custom metrics
+- convention is to also check `process.env.GOOGLE_APPLICATIONS_CREDENTIALS`
+  for the google monitoring service account credentials
+
 
 Api
 ---
@@ -117,7 +119,3 @@ Change Log
 ----------
 
 - 0.9.0 - initial published version
-
-
-Todo
-----
