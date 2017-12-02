@@ -43,7 +43,8 @@ module.exports = googleMetrics = {
     savedPlatformDetails: null,
 };
 
-if (typeof setImmediate === 'undefined') var setImmediate = process.nextTick;
+// only needed for v0.8 support
+// if (typeof setImmediate === 'undefined') var setImmediate = process.nextTick;
 
 
 /*
