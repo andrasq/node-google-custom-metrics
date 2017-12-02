@@ -389,22 +389,21 @@ module.exports = {
                 
             },
 
-            'should call createGoogleCustomMonitoringJWT': function(t) {
+            'should call createGoogleCustomMonitoringJWT and return granted token': function(t) {
                 var spy = t.spyOnce(gm, 'createGoogleCustomMonitoringJWT');
-                t.stubOnce(gm, 'httpRequest');
-                var httpSpy = mockHttpRequest(https, t, 2);
-                setImmediate(function() {
-                    httpSpy._mockRes.emit('data', '{"access_token":"some-base64-string"}');
-                    httpSpy._mockRes.emit('end');
-                })
+                var requestBody;
+                t.stubOnce(gm, 'httpRequest', function(uri, body, cb) {
+                    t.contains(body, spy.callReturn);
+                    t.contains(body, 'jwt-bearer');
+                    t.contains(body, 'assertion=' + spy.callReturn);
+                    requestBody = body;
+                    return cb(null, { statusCode: 200 }, new Buffer('{"access_token":"some-base64-string"}'))
+                });
                 gm.getGoogleAccessToken(this.mockCreds, 'someScopeUrl', 777, function(err, token) {
-console.log("AR: got", err, token);
                     t.equal(spy.callCount, 1);
+                    t.equal(token, 'some-base64-string');
                     t.done();
                 })
-// FIXME
-t.skip();
-//                t.done();
             },
 
             'should extract access_token': function(t) {
