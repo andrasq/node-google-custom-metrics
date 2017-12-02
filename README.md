@@ -57,9 +57,10 @@ Each upload the the complete POST request object that will be serialized and sen
         ...
       ]
 
-Options can be omitted, or be an object with the instance_name to identify samples,
+Options can be omitted, or be an object with the `instance_name` to identify samples,
 or the object returned from `getPlatformDetails()` that includes information used to
-tie a metric to the AWS or GCE instance that it was collected on.
+tie a metric to the AWS or GCE instance that it was collected on.  The default instance
+name is the `hostname -s`.
 
 The response will be an array of Google Stackdriver POST bodies, something like
 (for 'global' type un-associated metrics, the `resource.labels` attributes would
