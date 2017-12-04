@@ -358,6 +358,8 @@ function httpRequest( uri, body, callback ) {
 
     req.write(body);
     req.end();
+
+    return req;
 }
 
 function tryJsonDecode( string ) {
