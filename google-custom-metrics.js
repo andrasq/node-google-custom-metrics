@@ -27,6 +27,7 @@ var Url = require('url');
 var util = require('util');
 var child_process = require('child_process');
 var os = require('os');
+var httpRequest = require('microreq');
 
 var googleMetrics;
 module.exports = googleMetrics = {
