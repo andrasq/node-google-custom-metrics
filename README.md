@@ -119,6 +119,7 @@ metrics are uploaded with just the `metrics.labels.instance_name` set to the hos
 Change Log
 ----------
 
+- 0.10.1 - split out microreq
 - 0.9.0 - initial published version
 
 
