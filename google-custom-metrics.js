@@ -324,17 +324,25 @@ function tryJsonDecode( string ) {
 
 /*
  * look up details about the virtual environment that is needed to send with the stats
+ * If a credentials json is provided, parse that instead for the platform report.
  */
-function getPlatformDetails( creds ) {
+function getPlatformDetails( creds, callerJson ) {
     creds = creds || {};
 
-    // reuse the info if available, else look up the details in the environment
-    if (!googleMetrics.savedPlatformDetails) googleMetrics.savedPlatformDetails = lookUpPlatformDetails();
+    // extract details from the callerJson if provided
+    if (callerJson) {
+        if (typeof callerJson === 'string' || Buffer.isBuffer(callerJson)) callerJson = tryJsonDecode(callerJson);
+        var details = lookUpPlatformDetails(callerJson);
+    }
+    else {
+        // reuse the info if available, else look up the details in the environment
+        if (!googleMetrics.savedPlatformDetails) googleMetrics.savedPlatformDetails = lookUpPlatformDetails();
 
-    // return a copy of our saved info
-    var details = {};
-    for (var k in googleMetrics.savedPlatformDetails) {
-        details[k] = googleMetrics.savedPlatformDetails[k];
+        // return a copy of our saved info
+        var details = {};
+        for (var k in googleMetrics.savedPlatformDetails) {
+            details[k] = googleMetrics.savedPlatformDetails[k];
+        }
     }
 
     // the project_id is added from the creds
@@ -343,18 +351,18 @@ function getPlatformDetails( creds ) {
     return details;
 }
 
-function lookUpPlatformDetails( ) {
+function lookUpPlatformDetails( callerJson ) {
     var json;
 
     // AWS
     // Both aws and gcp respond to this url, but only aws with a json document
     // Of them, only aws returns info with /usr/bin/ec2metadata (gcp returns all 'unavailable')
     var awsCmdline = 'curl -s -m 0.050 http://169.254.169.254/latest/dynamic/instance-identity/document';
-    json = tryJsonDecode(_tryExecSync(awsCmdline));
+    json = callerJson || tryJsonDecode(_tryExecSync(awsCmdline));
     if (json.instanceId) return {
         resource_type: 'aws_ec2_instance',      // google metrics type for amazon cloud
         instance_id: json.instanceId,           // AWS instance_id
-        instance_name: hostname_s(),
+        instance_name: hostname_s(json.hostname),
         aws_account: json.accountId,            // AWS account_id
         region: 'aws:' + json.availabilityZone,
         zone: undefined,
@@ -363,11 +371,11 @@ function lookUpPlatformDetails( ) {
 
     // GCP
     var gcpCmdline = "curl -s -m 0.050 -H 'Metadata-Flavor: Google' http://metadata.google.internal/computeMetadata/v1/instance/?recursive=true";
-    json = tryJsonDecode(_tryExecSync(gcpCmdline));
+    json = callerJson || tryJsonDecode(_tryExecSync(gcpCmdline));
     if (json.id) return {
         resource_type: 'gce_instance',          // google metrics type for google cloud
         instance_id: json.id,                   // GCP instance id 
-        instance_name: hostname_s(),            // the version in the json is a longer, internal name
+        instance_name: hostname_s(json.hostname),
         aws_account: undefined,
         region: undefined,
         zone: json.zone,                        // GCP availability zone
@@ -377,13 +385,13 @@ function lookUpPlatformDetails( ) {
     // some systems may have a patched ec2metadata to provide a unique system id
     var instance_id = _tryExecSync("ec2metadata | grep instance-id").trim().split(' ').pop();
 
+    json = callerJson || {};
     return {
         // on other platforms, send 'global' type metrics
         // note: 'global' metrics cannot associate to the instance_id
-        resource_type: 'global',
-        instance_id: instance_id,
-        instance_name: hostname_s(),
-
+        resource_type: json.resource_type || 'global',
+        instance_id: json.instance_id || instance_id,
+        instance_name: hostname_s(json.hostname),
     };
 }
 
@@ -394,8 +402,8 @@ function _tryExecSync( cmdline ) {
     catch (err) { return '' }
 }
 
-function hostname_s( ) {
-    var hostname = os.hostname();
+function hostname_s( hostname ) {
+    hostname = hostname || os.hostname();
     var dot = hostname.indexOf('.');
     return (dot > 0) ? hostname.slice(0, dot) : hostname;
 }

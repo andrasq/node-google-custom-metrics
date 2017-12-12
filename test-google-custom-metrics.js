@@ -98,6 +98,44 @@ module.exports = {
                 t.done();
             },
 
+            'should accept aws json object': function(t) {
+                gm.savedPlatformDetails = { details: 'some details' };
+                var info = gm.getPlatformDetails({ project_id: 123456 }, { instanceId: 1, hostname: 'some host', availabilityZone: 'north-east' });
+                t.equal(info.resource_type, 'aws_ec2_instance');
+                t.equal(info.region, 'aws:north-east');
+                t.equal(info.instance_name, 'some host');
+                t.equal(info.project_id, 123456);
+                t.done();
+            },
+
+            'should accept aws json string and Buffer': function(t) {
+                gm.savedPlatformDetails = { details: 'some details' };
+                var info = gm.getPlatformDetails({ project_id: 123456 }, JSON.stringify({ instanceId: 1, availabilityZone: 'north-east' }));
+                t.equal(info.resource_type, 'aws_ec2_instance');
+                var info = gm.getPlatformDetails({ project_id: 123456 }, new Buffer(JSON.stringify({ instanceId: 1, availabilityZone: 'north-east' })));
+                t.equal(info.resource_type, 'aws_ec2_instance');
+                t.done();
+            },
+
+            'should accept gce json object': function(t) {
+                gm.savedPlatformDetails = { details: 'some details' };
+                var info = gm.getPlatformDetails({ project_id: 123456 }, { id: 1, hostname: 'some other host', zone: 'north-east-A' });
+                t.equal(info.resource_type, 'gce_instance');
+                t.equal(info.zone, 'north-east-A');
+                t.equal(info.instance_name, 'some other host');
+                t.equal(info.project_id, 123456);
+                t.done();
+            },
+
+            'should accept other json object': function(t) {
+                gm.savedPlatformDetails = { details: 'some details' };
+                var info = gm.getPlatformDetails({ project_id: 123456 }, { resource_type: 'other type', hostname: 'some other other host' });
+                t.equal(info.resource_type, 'other type');
+                t.equal(info.instance_name, 'some other other host');
+                t.equal(info.project_id, 123456);
+                t.done();
+            },
+
             'should probe for aws': function(t) {
                 var awsProbed = false;
 
@@ -151,6 +189,14 @@ module.exports = {
                 gm.savedPlatformDetails = null;
                 var info = gm.getPlatformDetails();
                 t.equal(info.instance_name, 'some-host');
+                t.done();
+            },
+
+            'should return hostname from details': function(t) {
+                gm.savedPlatformDetails = null;
+                var info = gm.getPlatformDetails({}, { hostname: 'some-other-host.name.com'});
+                t.equal(info.resource_type, 'global');
+                t.equal(info.instance_name, 'some-other-host');
                 t.done();
             },
 
