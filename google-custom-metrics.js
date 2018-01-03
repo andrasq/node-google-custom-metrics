@@ -326,7 +326,7 @@ function tryJsonDecode( string, fromGce ) {
             string = String(string);
             var p1 = string.indexOf('"id":');
             var p2 = string.indexOf(',', p1);
-            var id = string.slice(p1 + 5, p2);
+            var id = string.slice(p1 + 5, p2).trim();
             obj.id = id;
         }
         return obj;
