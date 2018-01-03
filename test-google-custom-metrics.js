@@ -166,7 +166,7 @@ module.exports = {
 
                 var gceInfo = {
                     id: 'some-gce-instance',
-                    zone: 'some-gce-zone',
+                    zone: 'some/gce-zone',
                 };
 
                 function mockGceShell(cmdline) { return (/metadata.google.internal/.test(cmdline)) ? JSON.stringify(gceInfo) : "{}" }
@@ -178,9 +178,18 @@ module.exports = {
                 t.contains(gceDetails, {
                     resource_type: 'gce_instance',
                     instance_id: 'some-gce-instance',
-                    zone: 'some-gce-zone',
+                    zone: 'gce-zone',
                 })
 
+                t.done();
+            },
+
+            'should return overlong gce host id': function(t) {
+                var gceInfo =
+                    '{"id":1234123412341234123,"hostname":"andras.c.gc-kvy-mt-us2.internal","zone":"projects/764585844340/zones/us-east1-d"}';
+                gm.savedPlatformDetails = null;
+                var gceDetails = gm.getPlatformDetails({}, gceInfo);
+                t.strictEqual(gceDetails.instance_id, "1234123412341234123");
                 t.done();
             },
 

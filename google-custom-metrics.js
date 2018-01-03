@@ -317,9 +317,25 @@ function signJWT( algorithm, header, claimSet, key ) {
     }
 }
 
-function tryJsonDecode( string ) {
-    try { return JSON.parse(string) }
-    catch (e) { e.jsonInput = string; e.message = 'json error: ' + e.message; return e }
+function tryJsonDecode( string, fromGce ) {
+    try {
+        var obj = JSON.parse(string);
+        if (fromGce && obj.id && obj.id > Math.pow(2, 53)) {
+            // the GCE host metadata contains an overlong integer that overflows Number().
+            // Return it as a string, else stats uploads error out due to the mismatch.
+            string = String(string);
+            var p1 = string.indexOf('"id":');
+            var p2 = string.indexOf(',', p1);
+            var id = string.slice(p1 + 5, p2);
+            obj.id = id;
+        }
+        return obj;
+    }
+    catch (e) {
+        e.jsonInput = string;
+        e.message = 'json error: ' + e.message;
+        return e;
+    }
 }
 
 /*
@@ -331,7 +347,6 @@ function getPlatformDetails( creds, callerJson ) {
 
     // extract details from the callerJson if provided
     if (callerJson) {
-        if (typeof callerJson === 'string' || Buffer.isBuffer(callerJson)) callerJson = tryJsonDecode(callerJson);
         var details = lookUpPlatformDetails(callerJson);
     }
     else {
@@ -353,12 +368,13 @@ function getPlatformDetails( creds, callerJson ) {
 
 function lookUpPlatformDetails( callerJson ) {
     var json;
+    var needJsonDecode = typeof callerJson === 'string' || Buffer.isBuffer(callerJson);
 
     // AWS
     // Both aws and gcp respond to this url, but only aws with a json document
     // Of them, only aws returns info with /usr/bin/ec2metadata (gcp returns all 'unavailable')
     var awsCmdline = 'curl -s -m 0.050 http://169.254.169.254/latest/dynamic/instance-identity/document';
-    json = callerJson || tryJsonDecode(_tryExecSync(awsCmdline));
+    json = needJsonDecode && tryJsonDecode(callerJson) || callerJson || tryJsonDecode(_tryExecSync(awsCmdline));
     if (json.instanceId) return {
         resource_type: 'aws_ec2_instance',      // google metrics type for amazon cloud
         instance_id: json.instanceId,           // AWS instance_id
@@ -371,14 +387,14 @@ function lookUpPlatformDetails( callerJson ) {
 
     // GCP
     var gcpCmdline = "curl -s -m 0.050 -H 'Metadata-Flavor: Google' http://metadata.google.internal/computeMetadata/v1/instance/?recursive=true";
-    json = callerJson || tryJsonDecode(_tryExecSync(gcpCmdline));
+    json = needJsonDecode && tryJsonDecode(callerJson, true) || callerJson || tryJsonDecode(_tryExecSync(gcpCmdline), true);
     if (json.id) return {
         resource_type: 'gce_instance',          // google metrics type for google cloud
         instance_id: json.id,                   // GCP instance id 
         instance_name: hostname_s(json.hostname),
         aws_account: undefined,
         region: undefined,
-        zone: json.zone,                        // GCP availability zone
+        zone: json.zone.split('/').pop(),       // GCP availability zone
     }
 
     // backward compatibility
