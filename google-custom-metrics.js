@@ -29,6 +29,8 @@ var child_process = require('child_process');
 var os = require('os');
 var httpRequest = require('microreq');
 
+var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || (Math.pow(2, 53) - 1);
+
 var googleMetrics;
 module.exports = googleMetrics = {
     convertStackdriverUploadToGoogleStackdriver: convertStackdriverUploadToGoogleStackdriver,
@@ -320,7 +322,7 @@ function signJWT( algorithm, header, claimSet, key ) {
 function tryJsonDecode( string, fromGce ) {
     try {
         var obj = JSON.parse(string);
-        if (fromGce && obj.id && obj.id > Number.MAX_SAFE_INTEGER) {
+        if (fromGce && obj.id && obj.id > MAX_SAFE_INTEGER) {
             // the GCE host metadata contains an overlong integer that overflows Number().
             // Return it as a string, else stats uploads error out due to the mismatch.
             string = String(string);
