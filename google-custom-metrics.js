@@ -320,7 +320,7 @@ function signJWT( algorithm, header, claimSet, key ) {
 function tryJsonDecode( string, fromGce ) {
     try {
         var obj = JSON.parse(string);
-        if (fromGce && obj.id && obj.id > Math.pow(2, 53)) {
+        if (fromGce && obj.id && obj.id > Number.MAX_SAFE_INTEGER) {
             // the GCE host metadata contains an overlong integer that overflows Number().
             // Return it as a string, else stats uploads error out due to the mismatch.
             string = String(string);
