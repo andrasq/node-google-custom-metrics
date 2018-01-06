@@ -146,8 +146,8 @@ function convertStackdriverUploadToGoogleStackdriver( platformDetails, uploadBod
 
     // split the samples into groups, maintaining the time-sorted order,
     // with no two samples in a group having the same name (metric.type).
-    // This "Duplicate TimeSeries encountered.  Only one point can be written
-    // per TimeSeries per request." errors.
+    // This avoids "Duplicate TimeSeries encountered.  Only one point can be
+    // written per TimeSeries per request." errors.
     var timeSeriesArray = [];
     var groupMetrics = [], groupMetricsNames = {}, groupTimestamp = '';
     for (var sampleIdx = 0; sampleIdx < googleMetricsArray.length; sampleIdx++) {
