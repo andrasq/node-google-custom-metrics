@@ -403,7 +403,7 @@ function lookUpPlatformDetails( callerJson ) {
     // some systems may have a patched ec2metadata to provide a unique system id
     var instance_id = _tryExecSync("ec2metadata | grep instance-id").trim().split(' ').pop();
 
-    json = callerJson || {};
+    json = needJsonDecode && tryJsonDecode(callerJson) || callerJson || {};
     return {
         // on other platforms, send 'global' type metrics
         // note: 'global' metrics cannot associate to the instance_id

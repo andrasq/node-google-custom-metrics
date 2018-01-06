@@ -206,6 +206,9 @@ module.exports = {
                 var info = gm.getPlatformDetails({}, { hostname: 'some-other-host.name.com'});
                 t.equal(info.resource_type, 'global');
                 t.equal(info.instance_name, 'some-other-host');
+                var info = gm.getPlatformDetails({}, JSON.stringify({ hostname: 'some-other-host.name.com'}));
+                t.equal(info.resource_type, 'global');
+                t.equal(info.instance_name, 'some-other-host');
                 t.done();
             },
 

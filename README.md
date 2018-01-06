@@ -106,11 +106,13 @@ Each response contains eg `{ statusCode: 200, body: { ... } }`, the http status 
 the reply body as received from Google.  In case of error, body.error.message will often
 contain the error message.
 
-### getPlatformDetails( [creds] )
+### getPlatformDetails( [creds] [,callerJson] )
 
 Return information about the instance the code is running on.  This information is used
 to associate the metrics to the host it was collected on.  Creds are optional; if provided,
 the Google Cloud `project_id` will be added to the details included with the custom metrics.
+If creds are passed, an optional second parameter may be used to pass the json to parse for
+patform information.  The json may be a string, a Buffer, or an already parsed object.
 
 If the platform details are omitted from the converted upload, `'global'` type custom
 metrics are uploaded with just the `metrics.labels.instance_name` set to the hostname.
@@ -119,7 +121,7 @@ metrics are uploaded with just the `metrics.labels.instance_name` set to the hos
 Change Log
 ----------
 
-- 0.11.1 - work around non-js-compatible GCE platform json, omit the GCE zone path
+- 0.12.0 - work around non-js-compatible GCE platform json, omit the GCE zone path
 - 0.11.0 - have `getPlatformDetails()` accept a json bundle to parse for details
 - 0.10.1 - split out microreq
 - 0.9.0 - initial published version
