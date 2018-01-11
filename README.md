@@ -121,6 +121,7 @@ metrics are uploaded with just the `metrics.labels.instance_name` set to the hos
 Change Log
 ----------
 
+- 0.12.1 - update getPlatformDetails docs, make work with node v0.10
 - 0.12.0 - work around non-js-compatible GCE platform json, omit the GCE zone path
 - 0.11.0 - have `getPlatformDetails()` accept a json bundle to parse for details
 - 0.10.1 - split out microreq
