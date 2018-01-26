@@ -131,4 +131,7 @@ Change Log
 Todo
 ----
 
-- make tests pass with node-v0.10
+- pre-combine same-named stats that arrive the same minute, round timestamp to the minute,
+  then offset the timestamp by 1 ms every upload for 10000 ms (ie, 10k uploads).
+  Should guarantee monotonically increasing timestamps even across upload boundaries,
+  and automatically de-dups the upload.
