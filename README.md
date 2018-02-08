@@ -135,3 +135,7 @@ Todo
   then offset the timestamp by 1 ms every upload for 10000 ms (ie, 10k uploads).
   Should guarantee monotonically increasing timestamps even across upload boundaries,
   and automatically de-dups the upload.
+
+- Automatically average samples that fall in the same minute like legacy Stackdriver did.
+  `guard` option to defer stats newer than the last ms; checkpoint deferred samples to
+  .sav file, preload them on next upload.
