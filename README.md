@@ -26,6 +26,9 @@ credentials object, upload the custom metrics to Google Stackdriver with:
         // replies is an array
     })
 
+See also [prom-pushgateway](https://github.com/andrasq/node-prom-pushgateway) for
+a library that will expose legacy Stackdriver custom metrics for scraping by Prometheus.
+
 
 Specifics
 ---------
