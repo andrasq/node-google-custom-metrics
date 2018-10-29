@@ -13,7 +13,7 @@
     "microreq": "0.9.0"
   },
   "devDependencies": {
-    "qnit": "0.18.3"
+    "qnit": "0.25.1"
   },
   "scripts": {
     "test": "qnit test*",
