@@ -1,16 +1,16 @@
 {
   "name": "google-custom-metrics",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "upload stackdriver custom metrics to google stackdriver",
   "license": "Apache-2.0",
   "repository": "https://github.com/andrasq/node-google-custom-metrics/#readme",
   "keywords": [ "gcp", "stackdriver", "metrics", "custom metrics", "stats", "monitoring" ],
 
   "engines": {
-    "node": ">= 0.10"
+    "node": ">= 0.9"
   },
   "dependencies": {
-    "microreq": "0.9.0"
+    "microreq": "0.13.3"
   },
   "devDependencies": {
     "qnit": "0.25.1"

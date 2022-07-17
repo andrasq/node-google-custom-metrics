@@ -29,7 +29,7 @@ var child_process = require('child_process');
 var os = require('os');
 var httpRequest = require('microreq');
 
-var isNode010 = process.version.slice(0, 5) === 'v0.10';
+var isNode010 = process.versions.node.split('.')[0] == 0 && process.versions.node.split('.')[1] <= 10;
 var MAX_SAFE_INTEGER = isNode010 && (Math.pow(2, 53) - 1) || Number.MAX_SAFE_INTEGER;
 
 var googleMetrics;
